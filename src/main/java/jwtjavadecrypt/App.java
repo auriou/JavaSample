@@ -14,6 +14,8 @@ import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.text.ParseException;
 import java.util.Base64;
+import java.util.Date;
+import java.util.List;
 
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
@@ -25,7 +27,7 @@ import com.nimbusds.jwt.SignedJWT;
 import com.nimbusds.jose.crypto.RSASSAVerifier;
 
 public class App {
-    
+
     // https://stackoverflow.com/questions/42482691/how-to-decrypt-a-jwt-in-java-which-is-encrypted-with-jwe-when-the-encrypted-to
 
     static String realmPublicKey = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAv7r8kE6re8pBzowIznGJjQTFS/najgsUoi5VwMnU87f+m7DX0+9K+DgdazkgRS5T3guvGDmvnv4VfRT6sA5gDAtBrBs998xfZhOYHl/1dKzzhVLQHVl1W51X2hQL65HchhhZ7qG03iCDGPfdVXaKiZu9rLAivJCqldsjyiWt71v0i53m6pdu/ld3QHE0m6PBvAwpYlTiNqDvOP2J0JVGg0JAXYwZcL3PcqrFufyIYnXd7uIrnFYwO2T6t+5Uf/twYCBhTEusAtpBdFhpX5fQ5iCwCgGEvAEV3riO+xQyHTnL8R+Kddw/AIB0+0dExC0liyqimzMiyzbQOTw23vHweQIDAQAB";
@@ -58,6 +60,9 @@ public class App {
             if (!signedJWT.verify(new RSASSAVerifier(GetPublicKey())))
                 throw new Exception("ERREUR : signature invalide !!");
             JWTClaimsSet claims = signedJWT.getJWTClaimsSet();
+            String identity = claims.getClaim("unique_name").toString();
+            Date expiration = claims.getExpirationTime();
+            String applicationId = claims.getIssuer();
             String userName = String.format("%s %s", claims.getClaim("prenom"), claims.getClaim("nom"));
 
             System.out.println("Hello " + userName);
